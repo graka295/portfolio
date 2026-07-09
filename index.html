@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Galang Raka Siwi — Backend Engineer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0f1e;
+      --bg2: #111827;
+      --bg3: #1a2233;
+      --accent: #3b82f6;
+      --accent2: #60a5fa;
+      --accent-glow: rgba(59,130,246,0.15);
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --border: rgba(255,255,255,0.07);
+      --card: rgba(255,255,255,0.03);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      backdrop-filter: blur(16px);
+      background: rgba(10,15,30,0.85);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--accent2);
+      letter-spacing: 0.05em;
+      font-family: 'Fira Code', monospace;
+    }
+
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent2); }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 6rem 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-glow {
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── PHOTO ── */
+    .photo-wrap {
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .photo-ring {
+      width: 220px; height: 220px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+      padding: 3px;
+      position: relative;
+    }
+
+    .photo-ring::before {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      border: 1px solid rgba(59,130,246,0.25);
+      animation: pulse-ring 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-ring {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.05); opacity: 1; }
+    }
+
+    .photo-inner {
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      background: var(--bg3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      overflow: hidden;
+    }
+
+    .photo-icon {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: rgba(59,130,246,0.15);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .photo-icon svg { width: 40px; height: 40px; fill: var(--accent2); opacity: 0.7; }
+    .photo-label { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+
+    /* ── HERO TEXT ── */
+    .hero-text { flex: 1; }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--accent-glow);
+      border: 1px solid rgba(59,130,246,0.3);
+      border-radius: 99px;
+      padding: 0.3rem 0.9rem;
+      font-size: 0.75rem;
+      font-family: 'Fira Code', monospace;
+      color: var(--accent2);
+      margin-bottom: 1.2rem;
+    }
+
+    .hero-tag::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 6px #22c55e;
+      animation: blink 2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #e2e8f0 30%, var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-role {
+      font-size: 1.1rem;
+      color: var(--accent2);
+      font-family: 'Fira Code', monospace;
+      font-weight: 500;
+      margin-bottom: 1.2rem;
+    }
+
+    .hero-desc {
+      color: var(--muted);
+      font-size: 0.95rem;
+      max-width: 500px;
+      margin-bottom: 2rem;
+      line-height: 1.8;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 2.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat { display: flex; flex-direction: column; }
+    .stat-num {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--accent2);
+      line-height: 1;
+    }
+    .stat-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.2rem; }
+
+    .hero-links { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.4rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+    }
+    .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(59,130,246,0.3); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent2); transform: translateY(-1px); }
+
+    /* ── SECTIONS ── */
+    section { padding: 5rem 2rem; position: relative; z-index: 1; }
+    section:nth-child(even) { background: rgba(255,255,255,0.015); }
+
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    .section-label {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.75rem;
+      color: var(--accent2);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-line {
+      width: 48px; height: 3px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      border-radius: 2px;
+      margin-bottom: 3rem;
+    }
+
+    /* ── SKILLS ── */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .skill-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .skill-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), #8b5cf6);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .skill-card:hover { border-color: rgba(59,130,246,0.3); transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.3); }
+    .skill-card:hover::before { opacity: 1; }
+
+    .skill-card-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: var(--accent-glow);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+
+    .skill-card-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent2);
+      margin-bottom: 0.75rem;
+    }
+
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+    .tag {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.2rem 0.6rem;
+      font-size: 0.75rem;
+      font-family: 'Fira Code', monospace;
+      color: var(--muted);
+      transition: all 0.2s;
+    }
+
+    .tag:hover { background: var(--accent-glow); border-color: rgba(59,130,246,0.4); color: var(--accent2); }
+
+    /* ── EXPERIENCE ── */
+    .timeline { position: relative; padding-left: 2rem; }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 8px; bottom: 0;
+      width: 1px;
+      background: linear-gradient(180deg, var(--accent), transparent);
+    }
+
+    .exp-item {
+      position: relative;
+      margin-bottom: 4rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.75rem 2rem;
+      transition: border-color 0.3s;
+    }
+
+    .exp-item:hover { border-color: rgba(59,130,246,0.25); }
+
+    .exp-item::before {
+      content: '';
+      position: absolute;
+      left: -2.55rem; top: 1.9rem;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent);
+      border: 2px solid var(--bg);
+    }
+
+    .exp-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.25rem;
+    }
+
+    .exp-company {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .exp-period {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      white-space: nowrap;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.25rem 0.7rem;
+      margin-top: 0.1rem;
+    }
+
+    .exp-role {
+      font-size: 0.88rem;
+      color: var(--accent2);
+      font-weight: 600;
+      margin-bottom: 0.15rem;
+    }
+
+    .exp-location {
+      font-size: 0.76rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .exp-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 1rem 0;
+    }
+
+    .exp-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    .exp-table tr { vertical-align: top; }
+
+    .exp-table td { padding: 0.35rem 0; line-height: 1.65; }
+
+    .exp-table .td-arrow {
+      width: 18px;
+      color: var(--accent);
+      font-size: 0.75rem;
+      padding-right: 0.5rem;
+      padding-top: 0.3rem;
+      white-space: nowrap;
+    }
+
+    .exp-table .td-key {
+      width: 240px;
+      min-width: 200px;
+      padding-right: 1.25rem;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .exp-table .td-desc {
+      color: var(--muted);
+    }
+
+    /* ── HIGHLIGHT BADGES ── */
+    .exp-highlights {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .exp-stats {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1.25rem;
+    }
+
+    .exp-stat {
+      background: var(--accent-glow);
+      border: 1px solid rgba(59,130,246,0.2);
+      border-radius: 10px;
+      padding: 0.6rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 90px;
+    }
+
+    .exp-stat-num {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--accent2);
+      line-height: 1;
+    }
+
+    .exp-stat-label {
+      font-size: 0.65rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-top: 0.25rem;
+      text-align: center;
+    }
+
+    .badge {
+      background: var(--accent-glow);
+      border: 1px solid rgba(59,130,246,0.25);
+      border-radius: 99px;
+      padding: 0.15rem 0.7rem;
+      font-size: 0.7rem;
+      font-family: 'Fira Code', monospace;
+      color: var(--accent2);
+    }
+
+    /* ── EDUCATION ── */
+    .edu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+
+    .edu-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.3s;
+    }
+
+    .edu-card:hover { border-color: rgba(59,130,246,0.3); transform: translateY(-2px); }
+
+    .edu-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .edu-school { font-size: 1rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .edu-degree { font-size: 0.85rem; color: var(--accent2); margin-bottom: 0.2rem; }
+    .edu-year { font-size: 0.78rem; color: var(--muted); font-family: 'Fira Code', monospace; }
+
+    /* ── CONTACT ── */
+    #contact { text-align: center; }
+
+    .contact-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 3rem;
+      max-width: 600px;
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .contact-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 0%, rgba(59,130,246,0.08), transparent 60%);
+    }
+
+    .contact-links {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .contact-item:hover { color: var(--accent2); border-color: var(--accent); background: var(--accent-glow); }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: 0.78rem;
+      border-top: 1px solid var(--border);
+      font-family: 'Fira Code', monospace;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 0 1rem; }
+      .nav-links { gap: 1rem; }
+      .nav-links a { font-size: 0.78rem; }
+
+      #hero { padding: 5rem 1.25rem 3rem; }
+      .hero-inner {
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+        text-align: center;
+      }
+      .photo-ring { width: 160px; height: 160px; }
+      .hero-desc { max-width: 100%; }
+      .hero-links { justify-content: center; }
+
+      section { padding: 3.5rem 1.25rem; }
+
+      .skills-grid { grid-template-columns: 1fr; }
+
+      .timeline { padding-left: 1.25rem; }
+      .exp-item { padding: 1.25rem; }
+      .exp-item::before { left: -1.8rem; }
+      .exp-header { flex-direction: column; gap: 0.4rem; }
+      .exp-period { align-self: flex-start; }
+
+      .exp-table { display: block; }
+      .exp-table tr { display: flex; flex-direction: column; gap: 0.1rem; margin-bottom: 0.75rem; }
+      .exp-table td { display: block; padding: 0; }
+      .td-arrow { display: none; }
+      .td-key { width: 100%; padding-right: 0; font-size: 0.85rem; }
+      .td-desc { font-size: 0.82rem; color: var(--muted); padding-left: 0.75rem; border-left: 2px solid rgba(59,130,246,0.3); }
+
+      .exp-stats { gap: 0.6rem; }
+      .exp-stat { min-width: 75px; padding: 0.5rem 0.75rem; }
+      .exp-stat-num { font-size: 1.1rem; }
+
+      .edu-grid { grid-template-columns: 1fr; }
+
+      .contact-card { padding: 2rem 1.25rem; }
+      .contact-links { flex-direction: column; align-items: stretch; }
+      .contact-item { justify-content: center; }
+    }
+
+    @media (max-width: 480px) {
+      .nav-links a:not(:first-child):not(:last-child) { display: none; }
+      h1 { font-size: 2rem; }
+      .exp-highlights { gap: 0.3rem; }
+      .badge { font-size: 0.65rem; padding: 0.1rem 0.5rem; }
+    }
+
+    /* ── CURSOR GLOW ── */
+    .cursor-glow {
+      position: fixed;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 999;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.3s;
+    }
+
+    /* ── SCROLL PROGRESS ── */
+    .scroll-progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), #8b5cf6);
+      z-index: 200;
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    /* ── MAGNETIC BTN ── */
+    .btn { position: relative; }
+
+    /* GSAP handles initial states via JS */
+  </style>
+</head>
+<body>
+<div class="scroll-progress" id="scrollProgress"></div>
+<div class="cursor-glow" id="cursorGlow"></div>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">graka.dev</span>
+  <div class="nav-links">
+    <a href="#skills">Skills</a>
+    <a href="#experience">Experience</a>
+    <a href="#education">Education</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-inner">
+    <div class="photo-wrap">
+      <div class="photo-ring">
+        <div class="photo-inner">
+          <img src="avatar.png" alt="Galang Raka Siwi" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-text">
+      <div class="hero-tag">Available for opportunities</div>
+      <h1>Galang Raka Siwi</h1>
+      <div class="hero-role">Backend Engineer</div>
+      <p class="hero-desc">
+        Specializing in core banking integration, real-time payment settlement, and lending system infrastructure.
+        9+ years building high-scale fintech systems across the full lending lifecycle.
+      </p>
+
+      <div class="hero-links">
+        <a href="#contact" class="btn btn-primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+          Get in Touch
+        </a>
+        <a href="https://www.linkedin.com/in/galang-raka-753b41177" target="_blank" class="btn btn-ghost">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+          LinkedIn
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label">// what i work with</p>
+      <h2 class="section-title">Skills & Technologies</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="skills-grid">
+      <div class="skill-card reveal">
+        <div class="skill-card-icon">⚡</div>
+        <div class="skill-card-title">Programming Languages</div>
+        <div class="skill-tags">
+          <span class="tag">Go (Golang)</span>
+          <span class="tag">PHP</span>
+          <span class="tag">JavaScript</span>
+          <span class="tag">C#</span>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="skill-card-icon">🗄️</div>
+        <div class="skill-card-title">Databases</div>
+        <div class="skill-tags">
+          <span class="tag">PostgreSQL</span>
+          <span class="tag">MongoDB</span>
+          <span class="tag">Redis</span>
+          <span class="tag">SQL Server</span>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="skill-card-icon">🏗️</div>
+        <div class="skill-card-title">System Design & Architecture</div>
+        <div class="skill-tags">
+          <span class="tag">Microservices</span>
+          <span class="tag">Event-Driven</span>
+          <span class="tag">Distributed Systems</span>
+          <span class="tag">REST API</span>
+          <span class="tag">Kafka</span>
+          <span class="tag">Core Banking</span>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="skill-card-icon">🚀</div>
+        <div class="skill-card-title">Infrastructure & DevOps</div>
+        <div class="skill-tags">
+          <span class="tag">Kubernetes (GKE)</span>
+          <span class="tag">Docker</span>
+          <span class="tag">ArgoCD</span>
+          <span class="tag">GitLab CI/CD</span>
+          <span class="tag">Prometheus</span>
+          <span class="tag">Cloud Tasks</span>
+          <span class="tag">PubSub</span>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="skill-card-icon">📦</div>
+        <div class="skill-card-title">Frameworks & Libraries</div>
+        <div class="skill-tags">
+          <span class="tag">Echo</span>
+          <span class="tag">Beego</span>
+          <span class="tag">Laravel</span>
+          <span class="tag">CodeIgniter</span>
+          <span class="tag">ASP.NET</span>
+          <span class="tag">React JS</span>
+          <span class="tag">Next.js</span>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="skill-card-icon">🛠️</div>
+        <div class="skill-card-title">Tools</div>
+        <div class="skill-tags">
+          <span class="tag">Krakend</span>
+          <span class="tag">Firebase</span>
+          <span class="tag">Postman</span>
+          <span class="tag">Jira</span>
+          <span class="tag">Figma</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label">// where i've worked</p>
+      <h2 class="section-title">Work Experience</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="timeline">
+
+      <!-- Amartha -->
+      <div class="exp-item reveal">
+        <div class="exp-header">
+          <div>
+            <div class="exp-company">Amartha</div>
+            <div class="exp-role">Backend Engineer</div>
+            <div class="exp-location">📍 Jakarta, Indonesia</div>
+          </div>
+          <div class="exp-period">Nov 2022 — Present</div>
+        </div>
+        <div class="exp-highlights">
+          <span class="badge">Go</span>
+          <span class="badge">Kafka</span>
+          <span class="badge">Kubernetes</span>
+          <span class="badge">Microservices</span>
+          <span class="badge">Core Banking</span>
+          <span class="badge">Fintech</span>
+        </div>
+        <div class="exp-divider"></div>
+        <table class="exp-table">
+          <tr><td class="td-arrow">▸</td><td class="td-key">Acting Tech Lead (9–11 engineers)</td><td class="td-desc">Owned technical delivery across lending domains: disbursement, repayment, money flow, and loan underwriting.</td></tr>
+          <tr><td class="td-arrow">▸</td><td class="td-key">Home Visit (end-to-end)</td><td class="td-desc">GPS check-in, selfie verification, cash opname, BM/Teller validation flow, and real-time monitoring dashboard. Supported 10,000+ field visit tasks.</td></tr>
+          <tr><td class="td-arrow">▸</td><td class="td-key">E-Wallet & Cash Repayment</td><td class="td-desc">Eligibility check, webview payment order, core banking journaling, and Kafka event streams. Serving 1M+ borrowers on weekly payment cycles.</td></tr>
+          <tr><td class="td-arrow">▸</td><td class="td-key">Autodebit Repayment System</td><td class="td-desc">Bulk registration pipeline, scheduling revamp, skip/retry logic, group schedule sync, and custom Prometheus observability metrics.</td></tr>
+          <tr><td class="td-arrow">▸</td><td class="td-key">Installment Billing Service</td><td class="td-desc">Built from scratch. Async/sync rule engine integration, retry mechanism for failed amounts, and full CI/CD pipeline.</td></tr>
+          <tr><td class="td-arrow">▸</td><td class="td-key">Virtual Account Money Flow</td><td class="td-desc">Payment matchmaking, core banking journaling, and query optimization achieving 70% latency reduction.</td></tr>
+          <tr><td class="td-arrow">▸</td><td class="td-key">LOS Underwriting Engine</td><td class="td-desc">Credit scoring API integration, credit limit formula & rounding, borrower eligibility revamp with backward-compatible migration.</td></tr>
+          <tr><td class="td-arrow">▸</td><td class="td-key">Legacy Service Deprecation</td><td class="td-desc">Double-write backward compatibility strategy, zero-downtime API migration and decommissioning.</td></tr>
+          <tr><td class="td-arrow">▸</td><td class="td-key">Platform Reliability</td><td class="td-desc">GKE migration, Krakend API gateway adoption, Kafka dead-letter handling, race condition fixes, GitOps with ArgoCD.</td></tr>
+        </table>
+        <div class="exp-stats">
+          <div class="exp-stat"><span class="exp-stat-num">1M+</span><span class="exp-stat-label">Borrowers Served</span></div>
+          <div class="exp-stat"><span class="exp-stat-num">70%</span><span class="exp-stat-label">Latency Reduction</span></div>
+          <div class="exp-stat"><span class="exp-stat-num">10K+</span><span class="exp-stat-label">Field Visit Tasks</span></div>
+          <div class="exp-stat"><span class="exp-stat-num">9–11</span><span class="exp-stat-label">Engineers Led</span></div>
+        </div>
+      </div>
+
+      <!-- IFT -->
+      <div class="exp-item reveal">
+        <div class="exp-header">
+          <div>
+            <div class="exp-company">Indonesia Future Technology</div>
+            <div class="exp-role">Backend Engineer</div>
+            <div class="exp-location">📍 Jakarta, Indonesia (Remote)</div>
+          </div>
+          <div class="exp-period">Jan 2022 — Nov 2022</div>
+        </div>
+        <div class="exp-highlights">
+          <span class="badge">Go</span>
+          <span class="badge">Next.js</span>
+          <span class="badge">Financial Planning</span>
+        </div>
+        <div class="exp-divider"></div>
+        <table class="exp-table">
+          <tr><td class="td-arrow">▸</td><td class="td-key">Financial Planning Platform</td><td class="td-desc">Built full-stack from scratch using Go (backend) and Next.js (frontend).</td></tr>
+          <tr><td class="td-arrow">▸</td><td class="td-key">Financial Health Scoring Engine</td><td class="td-desc">Analyzes income, savings, and retirement allocation, then provides personalized improvement recommendations.</td></tr>
+          <tr><td class="td-arrow">▸</td><td class="td-key">API & Architecture</td><td class="td-desc">Designed database schemas and RESTful APIs end-to-end, from architecture to deployment.</td></tr>
+        </table>
+      </div>
+
+      <!-- Walden -->
+      <div class="exp-item reveal">
+        <div class="exp-header">
+          <div>
+            <div class="exp-company">Walden Global Services</div>
+            <div class="exp-role">Software Developer</div>
+            <div class="exp-location">📍 Indonesia</div>
+          </div>
+          <div class="exp-period">Aug 2017 — Jan 2022</div>
+        </div>
+        <div class="exp-highlights">
+          <span class="badge">Go</span>
+          <span class="badge">ASP.NET</span>
+          <span class="badge">Enterprise Apps</span>
+          <span class="badge">Software House</span>
+        </div>
+        <div class="exp-divider"></div>
+        <table class="exp-table">
+          <tr><td class="td-arrow">▸</td><td class="td-key">Enterprise App Development</td><td class="td-desc">Built applications from scratch for major clients: PT. Finansia Multi Finance, PT. Timah Tbk, PT. Telkom Indonesia Tbk, PT. Darya Varia Laboratoria Tbk, and PT. Astra Honda Motor.</td></tr>
+          <tr><td class="td-arrow">▸</td><td class="td-key">Lending & Financial Systems</td><td class="td-desc">Built loan management, payment processing, and reporting systems for PT. Finansia Multi Finance using Go and ASP.NET.</td></tr>
+          <tr><td class="td-arrow">▸</td><td class="td-key">API & Database Design</td><td class="td-desc">Designed schemas and RESTful APIs across multiple client projects, delivering features on schedule in agile teams.</td></tr>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label">// academic background</p>
+      <h2 class="section-title">Education</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="edu-grid">
+      <div class="edu-card reveal">
+        <div class="edu-icon">🎓</div>
+        <div class="edu-school">Universitas Widyatama</div>
+        <div class="edu-degree">Bachelor's Degree, Informatics</div>
+        <div class="edu-year">2018 — 2022</div>
+      </div>
+      <div class="edu-card reveal">
+        <div class="edu-icon">🏫</div>
+        <div class="edu-school">SMK 1 Katapang</div>
+        <div class="edu-degree">Vocational Diploma, Software Engineering</div>
+        <div class="edu-year">2014 — 2017</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label">// let's connect</p>
+      <h2 class="section-title">Get In Touch</h2>
+      <div class="section-line" style="margin: 0 auto 3rem;"></div>
+    </div>
+
+    <div class="contact-card reveal">
+      <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 0.5rem;">Open to new opportunities in fintech & banking.</p>
+      <p style="color: var(--muted); font-size: 0.85rem;">Feel free to reach out via email or LinkedIn.</p>
+
+      <div class="contact-links">
+        <a href="mailto:graka295@gmail.com" class="contact-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+          graka295@gmail.com
+        </a>
+        <a href="https://www.linkedin.com/in/galang-raka-753b41177" target="_blank" class="contact-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+          LinkedIn
+        </a>
+        <a href="tel:085642554500" class="contact-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.63 3.45 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16z"/></svg>
+          085642554500
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Designed & built by Galang Raka Siwi · 2025</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+
+  // ── CURSOR GLOW (desktop only) ──
+  const glow = document.getElementById('cursorGlow');
+  if (window.matchMedia('(pointer: fine)').matches) {
+    window.addEventListener('mousemove', e => {
+      gsap.to(glow, { x: e.clientX, y: e.clientY, duration: 0.6, ease: 'power2.out' });
+    });
+  } else {
+    glow.style.display = 'none';
+  }
+
+  // ── SCROLL PROGRESS BAR ──
+  window.addEventListener('scroll', () => {
+    const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+    document.getElementById('scrollProgress').style.width = pct + '%';
+  });
+
+  // ── MAGNETIC BUTTONS ──
+  document.querySelectorAll('.btn').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const r = btn.getBoundingClientRect();
+      const dx = e.clientX - (r.left + r.width / 2);
+      const dy = e.clientY - (r.top + r.height / 2);
+      gsap.to(btn, { x: dx * 0.25, y: dy * 0.25, duration: 0.3, ease: 'power2.out' });
+    });
+    btn.addEventListener('mouseleave', () => {
+      gsap.to(btn, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.4)' });
+    });
+  });
+
+  // ── HERO ENTRANCE ──
+  const heroTl = gsap.timeline({ delay: 0.2 });
+  heroTl
+    .fromTo('.photo-ring', { x: -60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.9, ease: 'power3.out' })
+    .fromTo('.hero-tag',   { y: 20, opacity: 0 },  { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.4')
+    .fromTo('h1',          { y: 30, opacity: 0 },  { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out' }, '-=0.3')
+    .fromTo('.hero-role',  { y: 20, opacity: 0 },  { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.3')
+    .fromTo('.hero-desc',  { y: 20, opacity: 0 },  { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.2')
+    .fromTo('.hero-links', { y: 20, opacity: 0 },  { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.2');
+
+  // ── HERO GLOW PARALLAX ──
+  gsap.to('.hero-glow', {
+    y: 120,
+    scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true }
+  });
+
+  // ── SECTION HEADERS ──
+  document.querySelectorAll('.section-label, .section-title, .section-line').forEach(el => {
+    gsap.fromTo(el,
+      { y: 24, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.6, ease: 'power2.out',
+        scrollTrigger: { trigger: el, start: 'top 88%', once: true }
+      }
+    );
+  });
+
+  // ── SKILL CARDS (stagger) ──
+  gsap.fromTo('.skill-card',
+    { y: 40, opacity: 0 },
+    { y: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: 'power2.out',
+      scrollTrigger: { trigger: '#skills', start: 'top 75%', once: true }
+    }
+  );
+
+  // ── EXPERIENCE ITEMS ──
+  document.querySelectorAll('.exp-item').forEach(item => {
+    gsap.fromTo(item,
+      { x: -50, opacity: 0 },
+      { x: 0, opacity: 1, duration: 0.7, ease: 'power3.out',
+        scrollTrigger: { trigger: item, start: 'top 82%', once: true }
+      }
+    );
+    gsap.fromTo(item.querySelectorAll('tr'),
+      { x: -16, opacity: 0 },
+      { x: 0, opacity: 1, duration: 0.4, stagger: 0.05, ease: 'power2.out',
+        scrollTrigger: { trigger: item, start: 'top 78%', once: true }
+      }
+    );
+  });
+
+  // ── STATS COUNT-UP ──
+  document.querySelectorAll('.exp-stat-num').forEach(el => {
+    const text = el.textContent;
+    const num = parseFloat(text.replace(/[^0-9.]/g, ''));
+    const suffix = text.replace(/[0-9.]/g, '');
+    const obj = { val: 0 };
+    ScrollTrigger.create({
+      trigger: el, start: 'top 88%', once: true,
+      onEnter: () => gsap.to(obj, {
+        val: num, duration: 1.5, ease: 'power2.out',
+        onUpdate: () => { el.textContent = Math.round(obj.val) + suffix; }
+      })
+    });
+  });
+
+  // ── EDUCATION CARDS ──
+  gsap.fromTo('.edu-card',
+    { y: 40, opacity: 0 },
+    { y: 0, opacity: 1, duration: 0.6, stagger: 0.15, ease: 'power2.out',
+      scrollTrigger: { trigger: '#education', start: 'top 78%', once: true }
+    }
+  );
+
+  // ── CONTACT CARD ──
+  gsap.fromTo('.contact-card',
+    { y: 50, opacity: 0 },
+    { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out',
+      scrollTrigger: { trigger: '.contact-card', start: 'top 82%', once: true }
+    }
+  );
+
+  // ── NAV ACTIVE LINK ──
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 100) current = s.id; });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current ? 'var(--accent2)' : '';
+    });
+  });
+
+  // ── BADGE HOVER ──
+  document.querySelectorAll('.badge').forEach(badge => {
+    badge.addEventListener('mouseenter', () => gsap.to(badge, { scale: 1.1, duration: 0.2, ease: 'power1.out' }));
+    badge.addEventListener('mouseleave', () => gsap.to(badge, { scale: 1, duration: 0.2 }));
+  });
+</script>
+
+</body>
+</html>
